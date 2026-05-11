@@ -360,11 +360,7 @@ function VisualHome({ primaryTask, imagePosts, profilePosts, articlePosts }: { p
               className={`inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold transition-transform duration-200 hover:-translate-y-0.5 ${tone.action}`}
             >
               <Sparkles className="h-4 w-4" />
-              Generate
-            </Link>
-            <Link href="/profile" className={`inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold ${tone.actionAlt}`}>
-              Open profiles
-              <ArrowRight className="h-4 w-4" />
+              Open gallery
             </Link>
           </div>
         </div>

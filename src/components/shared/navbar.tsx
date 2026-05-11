@@ -14,7 +14,7 @@ import { SITE_RECIPE } from '@/config/site.recipe'
 import { getFactoryState } from '@/design/factory/get-factory-state'
 import { NAVBAR_OVERRIDE_ENABLED, NavbarOverride } from '@/overrides/navbar'
 
-const NavbarAuthControls = dynamic(() => import('@/components/shared/navbar-auth-controls').then((mod) => mod.NavbarAuthControls), {
+const UploadButton = dynamic(() => import('@/components/shared/upload-button').then((mod) => mod.UploadButton), {
   ssr: false,
   loading: () => null,
 })
@@ -95,7 +95,7 @@ export function Navbar() {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const pathname = usePathname()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, logout } = useAuth()
   const { recipe } = getFactoryState()
 
   const emphasizedKeys = SITE_RECIPE.enabledTasks?.length ? (SITE_RECIPE.enabledTasks as readonly string[]) : null
@@ -103,8 +103,9 @@ export function Navbar() {
     () =>
       SITE_CONFIG.tasks.filter((task) => {
         if (!task.enabled) return false
+        if (task.key === 'profile') return false
         if (emphasizedKeys) return emphasizedKeys.includes(task.key)
-        return task.key !== 'profile'
+        return true
       }),
     [emphasizedKeys]
   )
@@ -166,7 +167,12 @@ export function Navbar() {
             ) : null}
 
             {isAuthenticated ? (
-              <NavbarAuthControls />
+              <div className="hidden items-center gap-2 md:flex">
+                <UploadButton />
+                <Button variant="outline" size="sm" className="rounded-full px-4" onClick={logout}>
+                  Sign Out
+                </Button>
+              </div>
             ) : (
               <div className="hidden items-center gap-2 md:flex">
                 <Button variant="ghost" size="sm" asChild className="rounded-full px-4">
@@ -307,7 +313,12 @@ export function Navbar() {
           </Button>
 
           {isAuthenticated ? (
-            <NavbarAuthControls />
+            <div className="hidden items-center gap-2 md:flex">
+              <UploadButton />
+              <Button variant="outline" size="sm" className="rounded-full px-4" onClick={logout}>
+                Sign Out
+              </Button>
+            </div>
           ) : (
             <div className="hidden items-center gap-2 md:flex">
               <Button variant="ghost" size="sm" asChild className="rounded-full px-4">

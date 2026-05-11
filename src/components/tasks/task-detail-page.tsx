@@ -32,6 +32,9 @@ type PostContent = {
   images?: string[];
   latitude?: number | string;
   longitude?: number | string;
+  imageDescriptions?: string[];
+  descriptions?: string[];
+  captions?: string[];
 };
 
 const isValidImageUrl = (value?: string | null) =>
@@ -69,6 +72,25 @@ const getImageUrls = (post: SitePost, content: PostContent) => {
   if (merged.length) return merged;
   if (isValidImageUrl(content.logo)) return [content.logo as string];
   return ["/placeholder.svg?height=900&width=1400"];
+};
+
+const getImageDescriptions = (content: PostContent, post: SitePost) => {
+  const fromArrays = [content.imageDescriptions, content.descriptions, content.captions]
+    .filter(Array.isArray)
+    .flat()
+    .filter((item): item is string => typeof item === "string" && item.trim().length > 0)
+    .map((item) => item.trim());
+
+  if (fromArrays.length) return fromArrays;
+
+  const fallback =
+    (typeof content.description === "string" && content.description.trim()) ||
+    (typeof content.body === "string" && content.body.trim()) ||
+    (typeof content.excerpt === "string" && content.excerpt.trim()) ||
+    (typeof post.summary === "string" && post.summary.trim()) ||
+    "";
+
+  return fallback ? [fallback] : [];
 };
 
 function DetailMeta({
@@ -219,6 +241,7 @@ export async function TaskDetailPage({ task, slug }: { task: TaskKey; slug: stri
   const postTags = Array.isArray(post.tags) ? post.tags.filter((tag) => typeof tag === "string") : [];
   const location = content.address || content.location;
   const images = getImageUrls(post, content);
+  const imageDescriptions = task === "image" ? getImageDescriptions(content, post) : [];
   const website = content.website;
   const related = (await fetchTaskPosts(task, 6)).filter((item) => item.slug !== post.slug).slice(0, 3);
   const baseUrl = SITE_CONFIG.baseUrl.replace(/\/$/, "");
@@ -276,6 +299,27 @@ export async function TaskDetailPage({ task, slug }: { task: TaskKey; slug: stri
                 {images.slice(1).map((image, index) => (
                   <div key={`${image}-${index}`} className="relative aspect-[4/3] overflow-hidden rounded-[1.5rem] border-2 border-white shadow-lg">
                     <ContentImage src={image} alt={`${post.title} ${index + 2}`} fill className="object-cover transition-all duration-500 hover:scale-110 hover:rotate-1" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {task === "image" && imageDescriptions.length > 0 && (
+          <section className="mt-8">
+            <div className={`overflow-hidden rounded-[2rem] ${experience.panelClass} p-6`}>
+              <h2 className="text-2xl font-semibold text-foreground">Image Description</h2>
+              <div className="mt-4 space-y-4 text-sm leading-8 text-muted-foreground">
+                {imageDescriptions.map((item, index) => (
+                  <div key={`${item.slice(0, 24)}-${index}`}>
+                    {imageDescriptions.length > 1 ? (
+                      <p className="mb-2 font-medium text-foreground">{index + 1}.</p>
+                    ) : null}
+                    <RichContent
+                      html={formatRichHtml(item, "Details coming soon.")}
+                      className="prose-p:my-3"
+                    />
                   </div>
                 ))}
               </div>

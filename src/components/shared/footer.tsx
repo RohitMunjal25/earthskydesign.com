@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { FileText, Building2, LayoutGrid, Tag, Github, Twitter, Linkedin, Image as ImageIcon, User, ArrowRight, Sparkles } from 'lucide-react'
+import { FileText, Building2, LayoutGrid, Tag, Image as ImageIcon, User, ArrowRight, Sparkles } from 'lucide-react'
 import { SITE_CONFIG, type TaskKey } from '@/lib/site-config'
 import { siteContent } from '@/config/site.content'
 import { getFactoryState } from '@/design/factory/get-factory-state'
@@ -19,7 +19,7 @@ const taskIcons: Record<TaskKey, any> = {
 }
 
 const footerLinks = {
-  platform: SITE_CONFIG.tasks.filter((task) => task.enabled).map((task) => ({
+  platform: SITE_CONFIG.tasks.filter((task) => task.enabled && task.key !== 'profile').map((task) => ({
     name: task.label,
     href: task.route,
     icon: taskIcons[task.key] || LayoutGrid,
@@ -34,8 +34,6 @@ const footerLinks = {
   resources: [
     { name: 'Help Center', href: '/help' },
     { name: 'Community', href: '/community' },
-    { name: 'Developers', href: '/developers' },
-    { name: 'Status', href: '/status' },
     { name: 'Contact', href: '/contact' },
     { name: 'About', href: '/about' },
 
@@ -47,12 +45,6 @@ const footerLinks = {
     { name: 'Licenses', href: '/licenses' },
   ],
 }
-
-const socialLinks = [
-  { name: 'Twitter', href: 'https://twitter.com', icon: Twitter },
-  { name: 'GitHub', href: 'https://github.com', icon: Github },
-  { name: 'LinkedIn', href: 'https://linkedin.com', icon: Linkedin },
-]
 
 export function Footer() {
   if (FOOTER_OVERRIDE_ENABLED) {
@@ -69,6 +61,7 @@ export function Footer() {
         <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-8 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
           <div>
             <p className="text-lg font-semibold">{SITE_CONFIG.name}</p>
+            <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[#5b664c]">{siteContent.footer.tagline}</p>
             <p className="mt-1 text-sm text-[#56604b]">{SITE_CONFIG.description}</p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -95,6 +88,9 @@ export function Footer() {
                 </div>
                 <div>
                   <p className="text-lg font-semibold">{SITE_CONFIG.name}</p>
+                  <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[#8b6d5a]">
+                    Visual Stories & Creative Gallery
+                  </p>
                   <p className="text-xs uppercase tracking-[0.24em] text-[#8b6d5a]">{siteContent.footer.tagline}</p>
                 </div>
               </div>
@@ -106,7 +102,7 @@ export function Footer() {
                 </Link>
               ) : null}
             </div>
-            <div className="grid gap-6 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-3">
+            <div className="grid gap-6 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-2">
               <div>
                 <h3 className="text-xs font-semibold uppercase tracking-[0.24em] text-[#8b6d5a]">Surfaces</h3>
                 <ul className="mt-4 space-y-3 text-sm text-[#4a3229]/90">
@@ -122,16 +118,6 @@ export function Footer() {
                     <li key={item.name}><Link href={item.href} className="hover:text-[#1a0f0c]">{item.name}</Link></li>
                   ))}
                 </ul>
-              </div>
-              <div>
-                <h3 className="text-xs font-semibold uppercase tracking-[0.24em] text-[#8b6d5a]">Connect</h3>
-                <div className="mt-4 flex gap-3">
-                  {socialLinks.map((item) => (
-                    <Link key={item.name} href={item.href} target="_blank" rel="noopener noreferrer" className="rounded-full border border-black/10 bg-white/70 p-2.5 text-[#4a3229] hover:bg-white hover:text-[#1a0f0c]">
-                      <item.icon className="h-4 w-4" />
-                    </Link>
-                  ))}
-                </div>
               </div>
             </div>
           </div>
@@ -152,6 +138,7 @@ export function Footer() {
                 Editorial desk
               </div>
               <h3 className="mt-5 text-3xl font-semibold tracking-[-0.04em]">{SITE_CONFIG.name}</h3>
+              <p className="mt-2 text-xs uppercase tracking-[0.24em] text-[#8b6d5a]">{siteContent.footer.tagline}</p>
               <p className="mt-4 max-w-md text-sm leading-7 text-[#72594a]">{SITE_CONFIG.description}</p>
             </div>
             <div>
